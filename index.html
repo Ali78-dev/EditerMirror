@@ -1,0 +1,1027 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1224">
+<title>مرآة — استوديو الصور المتقدم</title>
+<style>
+  :root{
+    --bg:#080d1b; --surface:#10182b; --surface-2:#151f35; --surface-3:#1b2944;
+    --line:rgba(151,169,202,.18); --line-strong:rgba(151,169,202,.30);
+    --text:#edf3ff; --muted:#95a4bf; --soft:#cbd5e8;
+    --cyan:#57d4f2; --violet:#a78bfa; --orange:#ffb86b; --green:#55d6a4;
+    --danger:#ff798c; --shadow:0 18px 45px rgba(0,0,0,.28); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    color:var(--text);
+    background:radial-gradient(circle at 92% 2%,rgba(87,212,242,.10),transparent 28rem),
+               radial-gradient(circle at 5% 50%,rgba(167,139,250,.09),transparent 30rem),var(--bg);
+    font-family:Tahoma,"Segoe UI",Arial,sans-serif; font-size:13px;
+  }
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+  button:disabled{cursor:not-allowed;opacity:.45}
+  .hidden{display:none!important}
+  .app-shell{min-height:100vh;display:flex;flex-direction:column}
+  .topbar{min-height:70px;display:flex;align-items:center;gap:12px;padding:10px 20px;
+    border-bottom:1px solid var(--line);background:rgba(8,13,27,.85);backdrop-filter:blur(16px);
+    position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;min-width:190px}
+  .brand-mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+    color:#07111d;font-size:21px;font-weight:900;
+    background:linear-gradient(135deg,var(--cyan),#88f5dc 55%,var(--orange));
+    box-shadow:0 8px 22px rgba(87,212,242,.18)}
+  .brand strong{display:block;font-size:18px;letter-spacing:-.3px}
+  .brand small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+  .top-actions{display:flex;align-items:center;gap:6px}
+  .grow{flex:1}
+  .top-file{display:inline-flex;align-items:center;gap:7px}
+  .top-file input,.file-drop input{display:none}
+
+  .btn{border:1px solid var(--line);color:var(--soft);min-height:34px;padding:7px 11px;
+    border-radius:10px;transition:.18s ease;white-space:nowrap;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025))}
+  .btn:hover{border-color:var(--line-strong);transform:translateY(-1px);color:#fff}
+  .btn.primary{border-color:rgba(87,212,242,.42);color:#071420;font-weight:800;
+    background:linear-gradient(135deg,#72e0f5,#74f1c4)}
+  .btn.violet{border-color:rgba(167,139,250,.42);color:#071420;font-weight:800;
+    background:linear-gradient(135deg,#b79bff,#8ab8ff)}
+  .btn.green{border-color:rgba(85,214,164,.42);color:#071420;font-weight:800;
+    background:linear-gradient(135deg,#78e6b7,#7ed3f0)}
+  .btn.danger{border-color:rgba(255,121,140,.42);color:#ffdfe4;
+    background:linear-gradient(180deg,rgba(255,121,140,.22),rgba(255,121,140,.10))}
+  .btn.mini{min-height:26px;padding:4px 8px;font-size:11px;border-radius:8px}
+  .btn.icon{width:34px;padding:0;text-align:center;font-size:16px}
+  .btn.soft{border-color:rgba(87,212,242,.5);color:var(--cyan);font-weight:700}
+
+  .workspace{flex:1;display:grid;grid-template-columns:300px minmax(0,1fr) 320px;gap:16px;padding:16px}
+  .panel{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));
+    border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+    overflow-y:auto;padding:14px;max-height:calc(100vh - 104px)}
+  .panel::-webkit-scrollbar{width:6px}
+  .panel::-webkit-scrollbar-thumb{background:#2d4265;border-radius:10px}
+  .panel h3{display:flex;align-items:center;gap:8px;margin:2px 0 10px;font-size:14px;color:var(--cyan)}
+  .panel h3 span.tab-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan)}
+  .section{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
+  .section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+  .section-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+  .label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .label-line{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin:8px 0 3px}
+  output,.value-pill{color:var(--cyan);font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--cyan);height:22px}
+  input[type=number],input[type=text],select{
+    width:100%;background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:9px;padding:7px 9px;min-height:32px}
+  input[type=color]{width:42px;height:32px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);padding:2px}
+  .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .row>*{flex:1}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .check{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--soft);margin:8px 0}
+  .check input{accent-color:var(--cyan)}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);
+    background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+
+  .canvas-stage{position:relative;background:
+      linear-gradient(45deg,#0d1424 25%,transparent 25%),
+      linear-gradient(-45deg,#0d1424 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#0d1424 75%),
+      linear-gradient(-45deg,transparent 75%,#0d1424 75%),
+      #0a101d;background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0;
+    border:1px solid var(--line);border-radius:var(--radius);min-height:0;
+    display:flex;align-items:center;justify-content:center;overflow:auto;max-height:calc(100vh - 190px)}
+  .canvas-inner{position:relative;max-width:100%;max-height:100%;margin:auto}
+  canvas{max-width:100%;max-height:calc(100vh - 200px);display:block;border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+  .empty-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--muted);text-align:center;padding:20px}
+  .empty-state .big{font-size:40px;opacity:.5}
+  .drop-zone{border:2px dashed var(--line-strong);border-radius:12px;padding:13px;text-align:center;color:var(--soft);cursor:pointer;transition:.2s}
+  .drop-zone:hover{border-color:var(--cyan);background:rgba(87,212,242,.06)}
+
+  .crop-box{position:absolute;border:2px solid var(--cyan);box-shadow:0 0 0 9999px rgba(0,0,0,.55);
+    cursor:move;display:none;border-radius:3px}
+  .crop-resize{position:absolute;width:12px;height:12px;border-radius:3px;background:var(--cyan);right:-6px;bottom:-6px;cursor:se-resize}
+
+  .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .btn-grid .btn{justify-content:center;display:flex;align-items:center}
+
+  .filter-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{border:1px solid var(--line);background:var(--surface-2);color:var(--soft);
+    border-radius:20px;padding:5px 11px;font-size:11px;transition:.15s}
+  .chip:hover{border-color:var(--cyan);color:#fff}
+  .chip.active{background:linear-gradient(135deg,#72e0f5,#74f1c4);color:#071420;border-color:transparent;font-weight:700}
+
+  .background-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .bg-thumb{aspect-ratio:1;border-radius:10px;overflow:hidden;border:2px solid var(--line);
+    background-size:cover;background-position:center;cursor:pointer;transition:.15s}
+  .bg-thumb:hover{transform:scale(1.04);border-color:var(--cyan)}
+  .bg-thumb.active{border-color:var(--green);box-shadow:0 0 0 3px rgba(85,214,164,.3)}
+
+  .status-bar{position:fixed;bottom:0;left:0;right:0;display:flex;align-items:center;gap:18px;
+    padding:8px 20px;background:rgba(8,13,27,.9);border-top:1px solid var(--line);z-index:15;
+    color:var(--muted);font-size:12px}
+  .status-bar .photo{margin-inline-start:auto}
+
+  #toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(20px);z-index:50;
+    background:var(--surface-3);border:1px solid var(--line-strong);border-radius:12px;
+    padding:12px 20px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;
+    max-width:80%;text-align:center}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #toast.err{border-color:rgba(255,121,140,.5)}
+
+  .busy .panel,.busy .canvas-stage{opacity:.7}
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--cyan);
+    border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:-3px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(4,8,18,.7);z-index:40;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .modal-bg.show{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--line-strong);border-radius:18px;padding:22px;
+    width:min(560px,92vw);box-shadow:var(--shadow);max-height:88vh;overflow:auto}
+
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:12px}
+  .tab-opt{flex:1;text-align:center;border:1px solid var(--line);background:var(--surface-2);
+    color:var(--muted);border-radius:10px;padding:8px 6px;font-size:11px;font-weight:700}
+  .tab-opt.active{background:linear-gradient(135deg,#72e0f5,#74f1c4);color:#071420;border-color:transparent}
+
+  .canvas-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .kbd{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+
+  @media(max-width:1100px){.workspace{grid-template-columns:1fr 1fr}.canvas-stage{grid-column:1/-1;order:-1;max-height:400px}}
+  @media(max-width:760px){.workspace{grid-template-columns:1fr}.canvas-stage{order:-1}.panel{max-height:none}.topbar{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="app-shell" id="appShell">
+  <!-- ─────────────── الشريط العلوي ─────────────── -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">◑</div>
+      <div><strong>مِرآة</strong><small>استوديو الصور المتقدم</small></div>
+    </div>
+    <div class="top-actions">
+      <span class="top-file">
+        <button class="btn primary" id="openButton">+ فتح صورة</button>
+        <input type="file" id="fileInput" accept="image/*">
+      </span>
+      <span class="top-file">
+        <button class="btn" id="secondOpenButton">٢ صورة ثانية</button>
+        <input type="file" id="secondFileInput" accept="image/*">
+      </span>
+      <button class="btn icon" id="undoButton" title="تراجع Ctrl+Z" disabled>↶</button>
+      <button class="btn icon" id="redoButton" title="إعادة Ctrl+Y" disabled>↷</button>
+      <button class="btn" id="resetButton">⬚ الأصلية</button>
+      <button class="btn primary" id="quickSaveButton">⬇ تنزيل</button>
+      <button class="btn violet" id="helpButton" title="دليل الاستخدام والمساعدة">؟ مساعدة</button>
+    </div>
+  </header>
+
+  <!-- ─────────────── منطقة العمل ─────────────── -->
+  <div class="workspace">
+
+    <!-- ═════════════ 1) جهة المعالجة والتحسين والتنعيم ═════════════ -->
+    <aside class="panel">
+      <h3><span class="tab-dot" style="background:var(--cyan)"></span> المعالجة · التحسين · التنعيم</h3>
+      <div class="tabs" id="procTabs">
+        <button class="tab-opt active" data-tab="enhance">بكسلات/تعزيز</button>
+        <button class="tab-opt" data-tab="smooth">تنعيم/تحديد</button>
+        <button class="tab-opt" data-tab="edges">حواف</button>
+      </div>
+
+      <!-- تَبويب التعزيز البكسلي -->
+      <div class="proc-pane" data-pane="enhance">
+        <section class="section">
+          <div class="section-title"><span>تحسينات تلقائية</span></div>
+          <button class="btn soft" style="width:100%;margin-bottom:7px" id="autoButton">✨ تحسين تلقائي</button>
+          <div class="btn-grid">
+            <button class="btn" id="negativeButton">Negative ▶ عكس</button>
+            <button class="btn" id="logButton">Log ▶ لوغاريتم</button>
+            <button class="btn green" id="equalizeButton">تسوية الهيستوغرام</button>
+            <button class="btn" id="grayscaleButton">◐ أبيض وأسود</button>
+            <button class="btn" id="invertButton">⇄ عكس الألوان</button>
+            <button class="btn" id="thresholdApplyBtn">◧ Threshold</button>
+            <button class="btn" id="posterizeButton">Posterize</button>
+            <button class="btn" id="solarizeButton">Solarize</button>
+            <button class="btn" id="duotoneButton">ثنائي اللون</button>
+            <button class="btn" id="sepiaButton">Sepia عتيقة</button>
+            <button class="btn" id="pixelateButton">تأثير البكسل</button>
+            <button class="btn violet" id="hsvButton">HSV</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title"><span>الإضاءة واللون</span></div>
+          <div class="label-line"><span>الإضاءة</span><output id="brightnessValue">0</output></div>
+          <input type="range" id="brightness" min="-100" max="100" value="0">
+          <div class="label-line"><span>التباين</span><output id="contrastValue">0</output></div>
+          <input type="range" id="contrast" min="-100" max="100" value="0">
+          <div class="label-line"><span>التشبع اللوني</span><output id="saturationValue">0</output></div>
+          <input type="range" id="saturation" min="-100" max="100" value="0">
+          <div class="label-line"><span>Gamma</span><output id="gammaValue">1.00</output></div>
+          <input type="range" id="gamma" min="0.20" max="4" step="0.05" value="1">
+          <div class="label-line"><span>إحياء الألوان (Vibrance)</span><output id="vibranceValue">0</output></div>
+          <input type="range" id="vibrance" min="-100" max="100" value="0">
+          <div class="label-line"><span>توازن اللون الأحمر</span><output id="cbRedValue">0</output></div>
+          <input type="range" id="cbRed" min="-100" max="100" value="0">
+          <div class="label-line"><span>توازن اللون الأخضر</span><output id="cbGreenValue">0</output></div>
+          <input type="range" id="cbGreen" min="-100" max="100" value="0">
+          <div class="label-line"><span>توازن اللون الأزرق</span><output id="cbBlueValue">0</output></div>
+          <input type="range" id="cbBlue" min="-100" max="100" value="0">
+          <div class="label-line"><span>عتبة Threshold</span><output id="thresholdValue">128</output></div>
+          <input type="range" id="threshold" min="0" max="255" value="128">
+          <div class="row" style="margin-top:8px">
+            <button class="btn mini" id="applyBrightness">تطبيق الإضاءة</button>
+            <button class="btn mini" id="applyContrast">التباين</button>
+            <button class="btn mini" id="applySaturation">التشبع</button>
+          </div>
+          <div class="row" style="margin-top:6px">
+            <button class="btn mini" id="applyGamma">Gamma</button>
+            <button class="btn mini" id="applyVibrance">Vibrance</button>
+            <button class="btn mini" id="applyColorBalance">توازن اللون</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- تَبويب التنعيم والتحديد -->
+      <div class="proc-pane hidden" data-pane="smooth">
+        <section class="section">
+          <div class="section-title"><span>فلتر تنعيم (معبأة)</span></div>
+          <div class="filter-chips" id="smoothChips">
+            <button class="chip" data-f="smooth">Smooth</button>
+            <button class="chip" data-f="smooth_more">Smooth أكثر</button>
+            <button class="chip" data-f="blur">Blur</button>
+            <button class="chip" data-f="median">Median</button>
+            <button class="chip" data-f="gaussian">Gaussian</button>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>فلتر تحديد (Spatial)</span></div>
+          <div class="filter-chips" id="sharpenChips">
+            <button class="chip" data-f="sharpen">Sharpen</button>
+            <button class="chip" data-f="detail">Detail</button>
+            <button class="chip" data-f="unsharp">Unsharp Mask</button>
+            <button class="chip" data-f="emboss">Emboss</button>
+            <button class="chip" data-f="contour">Contour</button>
+            <button class="chip" data-f="find_edges">Find Edges</button>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>Mean (متوسط) — خطي</span></div>
+          <div class="label-line"><span>حجم النواة</span><output id="meanSizeValue">3</output></div>
+          <input type="range" id="meanSize" min="3" max="31" step="2" value="3">
+          <button class="btn" style="width:100%;margin-top:6px" id="applyMean">تطبيق Mean</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>Gaussian (غاوسي) — خطي</span></div>
+          <div class="label-line"><span>نصف القطر</span><output id="gaussRadValue">2.0</output></div>
+          <input type="range" id="gaussRad" min="0.5" max="20" step="0.5" value="2">
+          <button class="btn" style="width:100%;margin-top:6px" id="applyGaussian">تطبيق Gaussian</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>Median (وسيط) — غير خطي</span></div>
+          <div class="label-line"><span>حجم النافذة</span><output id="medSizeValue">3</output></div>
+          <input type="range" id="medSize" min="3" max="21" step="2" value="3">
+          <button class="btn green" style="width:100%;margin-top:6px" id="applyMedian">تطبيق Median</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>Custom Kernel — نواة مخصصة (5 أو 3)</span></div>
+          <textarea id="kernelText" rows="5" style="width:100%;background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:7px;font-family:monospace;direction:ltr" placeholder="0 -1 0&#10;-1 4 -1&#10;0 -1 0"></textarea>
+          <div class="row" style="margin-top:6px">
+            <button class="btn violet" id="applyCustom">تطبيق النواة</button>
+            <button class="btn" id="kernelPreset">مثال</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- تَبويب الحواف (كشف الحواف) -->
+      <div class="proc-pane hidden" data-pane="edges">
+        <section class="section">
+          <div class="section-title"><span>كشف الحواف (مشتقات)</span></div>
+          <div class="btn-grid">
+            <button class="btn" id="laplacianEdgeBtn">Laplacian Edge</button>
+            <button class="btn" id="laplacianBtn">Laplacian (قيمة)</button>
+            <button class="btn" id="differenceBtn">Difference</button>
+            <button class="btn" id="sobelBtn">Sobel</button>
+            <button class="btn" id="sobelXBtn">Sobel X</button>
+            <button class="btn" id="sobelYBtn">Sobel Y</button>
+            <button class="btn green" id="cannyBtn">Canny</button>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>إعدادات Canny</span></div>
+          <div class="label-line"><span>عتبة أدنى</span><output id="cannyLowValue">60</output></div>
+          <input type="range" id="cannyLow" min="5" max="100" value="60">
+          <div class="label-line"><span>عتبة أعلى</span><output id="cannyHighValue">160</output></div>
+          <input type="range" id="cannyHigh" min="20" max="255" value="160">
+          <button class="btn primary" style="width:100%;margin-top:8px" id="cannyApplyBtn">تطبيق Canny</button>
+        </section>
+      </div>
+    </aside>
+
+    <!-- ═════════════ 2) منطقة العرض ═════════════ -->
+    <main class="canvas-stage" id="canvasStage">
+      <div class="empty-state" id="emptyState">
+        <div class="big">🖼️</div>
+        <div><strong>اسحب صورة هنا أو ارفعها من الشريط العلوي</strong><br><small style="color:var(--muted)">PNG · JPG · WEBP · BMP · GIF</small></div>
+        <button class="btn primary" id="emptyOpenButton">اختيار صورة</button>
+      </div>
+      <div class="canvas-inner" id="canvasInner">
+        <canvas id="canvas"></canvas>
+        <div class="crop-box" id="cropBox"><div class="crop-resize"></div></div>
+      </div>
+    </main>
+
+    <!-- ═════════════ 3) جهة العمليات الأخرى ═════════════ -->
+    <aside class="panel">
+      <h3><span class="tab-dot" style="background:var(--orange)"></span> العمليات الأخرى</h3>
+      <div class="tabs" id="opTabs">
+        <button class="tab-opt active" data-tab="geometry">هندسة</button>
+        <button class="tab-opt" data-tab="convert">تحويل</button>
+        <button class="tab-opt" data-tab="bgremove">خلفية</button>
+        <button class="tab-opt" data-tab="draw">رسم</button>
+      </div>
+
+      <!-- هندسة -->
+      <div class="op-pane" data-pane="geometry">
+        <section class="section">
+          <div class="section-title"><span>القص (Crop)</span></div>
+          <button class="btn soft" style="width:100%;margin-bottom:7px" id="cropModeButton">✂ تحديد منطقة القص</button>
+          <div class="two-col hidden" id="cropConfirmRow">
+            <button class="btn primary" id="applyCrop">قص وتأكيد</button>
+            <button class="btn danger" id="cancelCrop">إلغاء</button>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>تكبير / تصغير (Resize)</span></div>
+          <div class="two-col">
+            <div><label class="label" for="resizeWidth">العرض px</label><input type="number" id="resizeWidth" min="1" max="10000"></div>
+            <div><label class="label" for="resizeHeight">الارتفاع px</label><input type="number" id="resizeHeight" min="1" max="10000"></div>
+          </div>
+          <label class="check"><input type="checkbox" id="keepRatio" checked> الحفاظ على التناسب</label>
+          <div class="row" style="margin-top:6px">
+            <button class="btn" id="applyHalf">½ أصغر</button>
+            <button class="btn" id="applyDouble">٢ أكبر</button>
+          </div>
+          <button class="btn primary" style="width:100%;margin-top:7px" id="resizeButton">تطبيق تغيير الحجم</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>الدوران والقلب (Rotate / Flip)</span></div>
+          <div class="row">
+            <button class="btn" id="rotateLeft">↺ 90°</button>
+            <button class="btn" id="rotateRight">↻ 90°</button>
+            <button class="btn" id="rotate180">180°</button>
+          </div>
+          <div class="row" style="margin-top:7px">
+            <button class="btn" id="flipHorizontal">↔ قلب أفقي</button>
+            <button class="btn" id="flipVertical">↕ قلب رأسي</button>
+          </div>
+          <div class="label-line"><span>زاوية مخصصة</span><output id="angleValue">0°</output></div>
+          <input type="range" id="angle" min="-180" max="180" step="1" value="0">
+          <button class="btn" style="width:100%;margin-top:6px" id="rotateButton">تدوير بالزاوية</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>التحويل المائل (Skew)</span></div>
+          <div class="two-col">
+            <div><label class="label" for="skewX">Skew X°</label><input type="number" id="skewX" min="-45" max="45" value="0"></div>
+            <div><label class="label" for="skewY">Skew Y°</label><input type="number" id="skewY" min="-45" max="45" value="0"></div>
+          </div>
+          <button class="btn" style="width:100%;margin-top:7px" id="skewButton">تطبيق الميل</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>إطار الصورة (Border)</span></div>
+          <div class="row">
+            <div style="flex:2"><label class="label" for="borderSize">الحجم px</label><input type="number" id="borderSize" min="0" max="80" value="0"></div>
+            <div style="flex:1"><label class="label" for="borderColor">اللون</label><input type="color" id="borderColor" value="#1e293b"></div>
+          </div>
+          <button class="btn" style="width:100%;margin-top:7px" id="borderButton">إضافة إطار</button>
+        </section>
+      </div>
+
+      <!-- تحويل -->
+      <div class="op-pane hidden" data-pane="convert">
+        <section class="section">
+          <div class="section-title"><span>تحويل الصيغة وحفظ</span></div>
+          <div class="label" for="outputFormat">صيغة الحفظ / التحويل</div>
+          <select id="outputFormat">
+            <option value="PNG">PNG — شفافية</option>
+            <option value="JPEG">JPG — صور الويب</option>
+            <option value="WEBP">WEBP — حجم أصغر</option>
+            <option value="BMP">BMP</option>
+            <option value="GIF">GIF</option>
+          </select>
+          <div class="label-line"><span>الجودة</span><output id="qualityValue">92</output></div>
+          <input type="range" id="quality" min="10" max="100" value="92">
+          <button class="btn primary" style="width:100%;margin-top:9px" id="downloadButton">⬇ تحويل وتنزيل الصورة</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>معلومات الصورة</span></div>
+          <div class="badge" id="metaInfo" style="width:100%;justify-content:space-between">الأبعاد: —</div>
+        </section>
+      </div>
+
+      <!-- إزالة الخلفية -->
+      <div class="op-pane hidden" data-pane="bgremove">
+        <section class="section">
+          <div class="section-title"><span>إزالة الخلفية</span></div>
+          <div class="two-col" style="margin-bottom:8px">
+            <div><label class="label" for="bgMethod">الطريقة</label>
+              <select id="bgMethod"><option value="flood">تلقائية (خفيفة)</option><option value="ai">AI (بريمبغ)</option></select>
+            </div>
+            <div><label class="label" for="bgTolerance">الحساسية</label><input type="number" id="bgTolerance" min="5" max="130" value="52"></div>
+          </div>
+          <button class="btn soft" style="width:100%" id="removeBgButton">✂ إزالة الخلفية</button>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>خلفية من المكتبة (خلفيات منتجات)</span></div>
+          <div class="background-grid" id="backgroundGrid"></div>
+          <div class="row" style="margin-top:8px">
+            <div style="flex:2"><label class="label" for="bgFit">طريقة الملاءمة</label>
+              <select id="bgFit"><option value="cover">تغطية (Cover)</option><option value="contain">احتواء (Contain)</option></select>
+            </div>
+            <div style="flex:1;align-self:end"><button class="btn green" style="width:100%" id="applyBackground">تطبيق</button></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- رسم -->
+      <div class="op-pane hidden" data-pane="draw">
+        <section class="section">
+          <div class="section-title"><span>الرسم بالفرشاة</span></div>
+          <div class="label-line"><span>لون الفرشاة</span></div>
+          <div class="row" style="margin-bottom:6px">
+            <input type="color" id="brushColor" value="#57d4f2">
+            <div style="flex:1"><label class="label-line"><span>حجم الفرشاة</span><output id="brushSizeValue">18</output></label>
+              <input type="range" id="brushSize" min="2" max="160" value="18">
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn soft" id="drawButton">✎ تفعيل الرسم</button>
+            <button class="btn" id="eraserButton">ممحاة</button>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-title"><span>إضافة نص</span></div>
+          <input type="text" id="textInput" placeholder="اكتب نصاً هنا" maxlength="80">
+          <div class="row" style="margin-top:7px">
+            <input type="color" id="textColor" value="#ffffff">
+            <div style="flex:1"><label class="label-line"><span>حجم النص</span><output id="textSizeValue">42</output></label>
+              <input type="range" id="textSize" min="10" max="240" value="42">
+            </div>
+          </div>
+          <button class="btn violet" style="width:100%;margin-top:7px" id="addTextButton">إضافة النص</button>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ─────────────── شريط الحالة ─────────────── -->
+  <div class="status-bar">
+    <span>حالة: <span id="status">جاهز</span></span>
+    <span class="photo" id="photoName">لم يتم اختيار صورة بعد</span>
+  </div>
+  <div id="toast"></div>
+
+  <!-- مودال HSV -->
+  <div class="modal-bg" id="hsvModal">
+    <div class="modal">
+      <h3 style="color:var(--cyan);margin-top:0">تعديل HSV</h3>
+      <div class="label-line"><span>درجة اللون (Hue)</span><output id="hueValue">0</output></div>
+      <input type="range" id="hue" min="-255" max="255" value="0">
+      <div class="label-line"><span>التشبع (Saturation)</span><output id="satValue">0</output></div>
+      <input type="range" id="sat" min="-100" max="100" value="0">
+      <div class="label-line"><span>الإضاءة (Value)</span><output id="valValue">0</output></div>
+      <input type="range" id="val" min="-100" max="100" value="0">
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="hsvApply">تطبيق</button>
+        <button class="btn" id="hsvClose">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال المساعدة ودليل الاستخدام -->
+  <div class="modal-bg" id="helpModal">
+    <div class="modal" style="width:min(760px,96vw);max-height:90vh">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="color:var(--violet);margin:0">📖 دليل الاستخدام — مِرآة استوديو الصور</h3>
+        <button class="btn icon" id="helpClose">✕</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <a href="/دليل_الاستخدام_الشامل_مرآة.pdf" download class="btn primary" style="text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px">⬇ تحميل الدليل PDF</a>
+        <a href="/دليل_الاستخدام_الشامل_مرآة.docx" download class="btn violet" style="text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px">⬇ تحميل الدليل Word</a>
+        <a href="/guide.pdf" target="_blank" class="btn soft" style="text-align:center;text-decoration:none">فتح PDF في المتصفح</a>
+        <a href="/api/guide" target="_blank" class="btn" style="text-align:center;text-decoration:none">معلومات الدليل JSON</a>
+      </div>
+
+      <div style="background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px">
+        <strong style="color:var(--cyan)">🚀 البدء السريع:</strong>
+        <ol style="margin:8px 0 0;padding-inline-start:18px;line-height:1.8">
+          <li>اضغط <b>+ فتح صورة</b> أو اسحب صورة إلى الوسط</li>
+          <li>استخدم اللوحة اليسرى: <b>بكسلات/تعزيز</b>، <b>تنعيم/تحديد</b>، <b>حواف</b></li>
+          <li>استخدم اللوحة اليمنى: <b>هندسة</b> (قص/حجم/دوران)، <b>تحويل</b>، <b>خلفية</b>، <b>رسم</b></li>
+          <li>التراجع <span class="kbd">Ctrl+Z</span> والإعادة <span class="kbd">Ctrl+Y</span> — حتى 60 خطوة</li>
+          <li>التنزيل عبر <b>⬇ تنزيل</b> السريع أو <b>تحويل وتنزيل</b> مع اختيار الصيغة</li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span style="color:var(--orange)">🧩 العمليات الأساسية — 50+ عملية</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;line-height:1.7">
+          <div>
+            <b style="color:var(--cyan)">هندسة:</b> قص، تكبير/تصغير، دوران، قلب أفقي/رأسي، ميل Skew، إطار<br>
+            <b style="color:var(--green)">تحويل:</b> PNG/JPG/WEBP/BMP/GIF مع جودة<br>
+            <b style="color:var(--violet)">بكسلات:</b> إضاءة، تباين، تشبع، Gamma، Vibrance، توازن لوني، Threshold، Negative، Log، Equalize، Sepia، Duotone، Pixelate
+          </div>
+          <div>
+            <b style="color:var(--orange)">فلاتر Lab4:</b> Mean خطي، Gaussian خطي، Median غير خطي، Custom Kernel، Blur/Smooth/Sharpen/Emboss...<br>
+            <b style="color:var(--danger)">حواف Lab5:</b> Laplacian، Difference، Sobel X/Y، Canny كامل من الصفر (غاوسي→Sobel→NMS→Hysteresis)<br>
+            <b style="color:var(--green)">إبداعية:</b> Vignette، Grain، Split Tone، Color Pop، Oil Paint، Cartoon، Reflection، Watermark
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span style="color:var(--green)">✂ إزالة الخلفية وخلفيات المنتجات</span></div>
+        <p style="font-size:11px;line-height:1.8;color:var(--soft);margin:0">
+          1) اختر <b>الطريقة</b>: تلقائية خفيفة (flood fill من الحواف) أو AI (rembg إن مثبت).<br>
+          2) اضبط <b>الحساسية</b> 5-130 (افتراضي 52).<br>
+          3) اضغط إزالة الخلفية → ستصبح شفافة.<br>
+          4) من <b>مكتبة الخلفيات</b> (8 خلفيات: blue_tech, clean_white, geometric_podium, gradient_studio, marble_luxe, nature_leaf, neon_dark, pastel_sweet) اختر خلفية ثم <b>تطبيق</b> مع Cover/Contain.
+        </p>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span style="color:var(--cyan)">⧉ دمج ورسم ونص</span></div>
+        <p style="font-size:11px;line-height:1.8;color:var(--soft);margin:0">
+          <b>دمج:</b> ارفع الصورة الأولى، ثم الثانية عبر زر <b>٢ صورة ثانية</b>، اختر نمط Normal/Multiply/Screen/Difference/Add/Soft Light وشفافية ثم دمج.<br>
+          <b>رسم:</b> في تبويب رسم اختر لون وحجم الفرشاة ثم <b>تفعيل الرسم</b> وارسم مباشرة على الكانفس — يحفظ تلقائياً في history.<br>
+          <b>نص:</b> اكتب نصاً واختر لون وحجم ثم إضافة النص (يُرسل للباك-اند ويرسم في المنتصف).<br>
+          <b>علامة مائية:</b> زر Watermark في الميزات الإبداعية يضيف © Mirror Studio.
+        </p>
+      </div>
+
+      <div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);border-radius:12px;padding:10px;margin-top:10px">
+        <strong style="color:var(--violet)">📄 الدليل الشامل:</strong>
+        <span style="font-size:11px;color:var(--soft)"> يحتوي على 16 فصلاً، شرح كل op مع الخوارزمية، تدفق البيانات Frontend↔Backend، الأمان والأداء والأخطاء المكتشفة، سيناريوهات اختبار، FAQ، قاموس مصطلحات. حمّله من الأزرار أعلاه أو من <code>/guide.pdf</code>. للدكتور: يوضح كل شيء بدون إخفاء.</span>
+      </div>
+
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="helpClose2" style="flex:1">فهمت — متابعة التحرير</button>
+        <a href="/دليل_الاستخدام_الشامل_مرآة.pdf" target="_blank" class="btn violet" style="flex:1;text-align:center;text-decoration:none">فتح الدليل الكامل</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════════════
+   واجهة «مرآة» — منطق التطبيق
+   ═══════════════════════════════════════════════════════════════════════ */
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const canvas = $("#canvas"), ctx = canvas.getContext("2d", { willReadFrequently: true });
+const stage = $("#canvasStage"), cropBox = $("#cropBox"), appShell = $("#appShell");
+const canvasInner = $("#canvasInner");
+
+const state = {
+  current: null,   // البيانات الحالية (data URL) — كانت الصورة
+  original: null,  // الأصلية بعد التحميل
+  history: [],     // المكدس للتراجع
+  future: [],
+  fileName: "",
+  second: null,    // الصورة الثانية
+  secondName: "",
+  drawing: false, erasing: false,
+  cropActive: false, cropRect: null,
+  loadedOnce: false
+};
+
+/* ─── حالة التحميل ─── */
+function setBusy(b){
+  appShell.classList.toggle("busy", b);
+  $("#status").innerHTML = b ? '<span class="spinner"></span> جارٍ المعالجة…' : "جاهز";
+}
+function setStatus(t){ $("#status").textContent = t; }
+function toast(t, err){
+  const el = $("#toast");
+  el.textContent = t;
+  el.classList.toggle("err", !!err);
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove("show"), 2600);
+}
+const hasImage = () => !!state.current;
+
+/* ─── قراءة وفتح الصور ─── */
+function readFile(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    state.current = state.original = e.target.result;
+    state.fileName = file.name;
+    state.history = [state.current]; state.future = [];
+    state.loadedOnce = true;
+    renderData(state.current);
+    updateMeta(); updateUndo();
+    $("#emptyState").classList.add("hidden");
+    $("#photoName").textContent = file.name;
+    toast("تم فتح الصورة ✓");
+  };
+  reader.readAsDataURL(file);
+}
+function readSecond(file){
+  const reader = new FileReader();
+  reader.onload = (e) => { state.second = e.target.result; state.secondName = file.name;
+    toast("الصورة الثانية جاهزة: " + file.name); };
+  reader.readAsDataURL(file);
+}
+$("#emptyOpenButton").onclick = $("#openButton").onclick = () => $("#fileInput").click();
+$("#secondOpenButton").onclick = () => $("#secondFileInput").click();
+$("#fileInput").addEventListener("change", e => e.target.files[0] && readFile(e.target.files[0]));
+$("#secondFileInput").addEventListener("change", e => e.target.files[0] && readSecond(e.target.files[0]));
+
+/* السحب والإفلات */
+["dragenter","dragover"].forEach(ev=>stage.addEventListener(ev, e=>{e.preventDefault(); stage.style.borderColor="var(--cyan)";}));
+["dragleave","drop"].forEach(ev=>stage.addEventListener(ev, e=>{e.preventDefault(); stage.style.borderColor="var(--line)";}));
+stage.addEventListener("drop", e=>{
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith("image/")) readFile(f);
+});
+
+/* ─── رسم البيانات على الكانفس ─── */
+function renderData(data){
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width; canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    resetCropUI();
+    updateMeta();
+  };
+  img.src = data;
+}
+function captureCanvas(){
+  return canvas.toDataURL("image/png");
+}
+/* تنفيذ العملية ويُحدَّث الكانفس من الناتج */
+async function commitData(data, label){
+  state.history.push(data);
+  if (state.history.length > 60) state.history.shift();
+  state.future = [];
+  state.current = data;
+  renderData(data);
+  updateUndo();
+  setStatus(label || "تم");
+}
+function updateMeta(){
+  if (!hasImage()) { $("#dimensions") && ($("#dimensions").textContent="—"); return; }
+  const img = new Image();
+  img.onload = () => {
+    const el = $("#metaInfo");
+    el.firstElementChild.textContent = "الأبعاد";
+    el.lastElementChild.textContent = img.width + " × " + img.height + " px";
+  };
+  img.src = state.current;
+}
+function updateUndo(){
+  $("#undoButton").disabled = state.history.length <= 1;
+  $("#redoButton").disabled = state.future.length === 0;
+}
+
+/* ─── إرسال طلب إلى الباك-اند ─── */
+async function processImage(op, extra = {}){
+  if (!hasImage()) { toast("افتح صورة أولاً", true); return; }
+  setBusy(true);
+  try {
+    const body = Object.assign({ op, image: state.current }, extra);
+    const res = await fetch("/api/process", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(body) });
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.error);
+    await commitData(out.data, "تم تطبيق: " + op);
+  } catch(e){ toast(e.message || "حدث خطأ", true); }
+  finally { setBusy(false); }
+}
+
+/* ─── تراجع / إعادة ─── */
+function undo(){
+  if (state.history.length <= 1) return;
+  state.future.push(state.history.pop());
+  state.current = state.history[state.history.length-1];
+  renderData(state.current); updateUndo(); updateMeta();
+}
+function redo(){
+  if (state.future.length === 0) return;
+  state.current = state.future.pop();
+  state.history.push(state.current);
+  renderData(state.current); updateUndo(); updateMeta();
+}
+$("#undoButton").onclick = undo;
+$("#redoButton").onclick = redo;
+document.addEventListener("keydown", e=>{
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z"){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  else if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="y"){ e.preventDefault(); redo(); }
+});
+$("#resetButton").onclick = ()=>{ if (state.original){ state.history=[state.original]; state.future=[]; state.current=state.original; renderData(state.original); updateUndo(); toast("عُدت إلى الصورة الأصلية"); } };
+
+/* ─── تنزيل الصورة ─── */
+function download(data, name){
+  const a = document.createElement("a");
+  a.href = data; a.download = name;
+  a.click();
+}
+$("#quickSaveButton").onclick = ()=>{ if (hasImage()) download(state.current, (state.fileName||"mirror").replace(/\.[^.]+$/,"")+"_edited.png"); };
+$("#downloadButton").onclick = ()=>{
+  if (!hasImage()) return;
+  const fmt = $("#outputFormat").value.toLowerCase();
+  processImage("convert", { output_format: $("#outputFormat").value, quality: +$("#quality").value })
+    .then(()=>download(state.current, (state.fileName||"mirror").replace(/\.[^.]+$/,"")+"."+fmt));
+};
+
+/* ═══════════════════ واجهة TABS ═══════════════════ */
+$$("#procTabs .tab-opt").forEach(b=>b.onclick=()=>{
+  $$("#procTabs .tab-opt").forEach(x=>x.classList.remove("active")); b.classList.add("active");
+  $$(".proc-pane").forEach(p=>p.classList.toggle("hidden", p.dataset.pane!==b.dataset.tab));
+});
+$$("#opTabs .tab-opt").forEach(b=>b.onclick=()=>{
+  $$("#opTabs .tab-opt").forEach(x=>x.classList.remove("active")); b.classList.add("active");
+  $$(".op-pane").forEach(p=>p.classList.toggle("hidden", p.dataset.pane!==b.dataset.tab));
+});
+
+/* ═══════════════════ قيمة المنزلاقات ─ عروض ─ ═══════════════════ */
+function bindVal(id, out){ const i=$(id), o=$(out); i.oninput=()=>o.textContent = i.dataset.dec ? (+i.value).toFixed(1) : i.value; i.oninput(); }
+bindVal("#brightness","#brightnessValue"); bindVal("#contrast","#contrastValue");
+bindVal("#saturation","#saturationValue"); bindVal("#vibrance","#vibranceValue");
+bindVal("#cbRed","#cbRedValue"); bindVal("#cbGreen","#cbGreenValue"); bindVal("#cbBlue","#cbBlueValue");
+bindVal("#threshold","#thresholdValue"); bindVal("#quality","#qualityValue");
+bindVal("#angle","#angleValue"); bindVal("#brushSize","#brushSizeValue"); bindVal("#textSize","#textSizeValue");
+const gI=$("#gamma"); gI.oninput=()=>$("#gammaValue").textContent=(+gI.value).toFixed(2);
+const meI=$("#meanSize"); meI.oninput=()=>$("#meanSizeValue").textContent=meI.value;
+const grI=$("#gaussRad"); grI.oninput=()=>$("#gaussRadValue").textContent=(+grI.value).toFixed(1);
+const mdI=$("#medSize"); mdI.oninput=()=>$("#medSizeValue").textContent=mdI.value;
+bindVal("#cannyLow","#cannyLowValue"); bindVal("#cannyHigh","#cannyHighValue");
+bindVal("#hue","#hueValue"); bindVal("#sat","#satValue"); bindVal("#val","#valValue");
+
+/* ═══════════════════ أزرار تحسين البكسل ═══════════════════ */
+$("#autoButton").onclick=()=>processImage("auto");
+$("#negativeButton").onclick=()=>processImage("negative");
+$("#logButton").onclick=()=>processImage("logarithm");
+$("#equalizeButton").onclick=()=>processImage("equalize");
+$("#grayscaleButton").onclick=()=>processImage("grayscale");
+$("#invertButton").onclick=()=>processImage("invert");
+$("#thresholdApplyBtn").onclick=()=>processImage("threshold",{value:+$("#threshold").value});
+$("#posterizeButton").onclick=()=>processImage("posterize",{value:4});
+$("#solarizeButton").onclick=()=>processImage("solarize",{value:+$("#threshold").value});
+$("#duotoneButton").onclick=()=>processImage("duotone");
+$("#sepiaButton").onclick=()=>processImage("sepia",{value:1});
+$("#pixelateButton").onclick=()=>processImage("pixelate",{block:10});
+$("#hsvButton").onclick=()=>{ $("#hsvModal").classList.add("show"); };
+$("#hsvClose").onclick=()=>$("#hsvModal").classList.remove("show");
+$("#hsvApply").onclick=()=>{ $("#hsvModal").classList.remove("show");
+  processImage("hsv",{hue:+$("#hue").value, saturation:+$("#sat").value, value:+$("#val").value}); };
+
+// ─── مودال المساعدة ودليل الاستخدام ───
+const helpModal = $("#helpModal");
+function openHelp(){ helpModal.classList.add("show"); }
+function closeHelp(){ helpModal.classList.remove("show"); }
+$("#helpButton").onclick = openHelp;
+$("#helpClose").onclick = closeHelp;
+$("#helpClose2") && ($("#helpClose2").onclick = closeHelp);
+helpModal.addEventListener("click", (e)=>{ if(e.target===helpModal) closeHelp(); });
+document.addEventListener("keydown", (e)=>{ if(e.key==="Escape"){ $("#hsvModal").classList.remove("show"); closeHelp(); } });
+// فتح تلقائي للمساعدة أول مرة (إذا لم يسبق فتح صورة)
+if(!localStorage.getItem("mirror_help_shown")){
+  setTimeout(()=>{ if(!state.loadedOnce){ openHelp(); localStorage.setItem("mirror_help_shown","1"); } }, 900);
+}
+
+$("#applyBrightness").onclick=()=>processImage("brightness",{value:+$("#brightness").value});
+$("#applyContrast").onclick=()=>processImage("contrast",{value:+$("#contrast").value});
+$("#applySaturation").onclick=()=>processImage("saturation",{value:+$("#saturation").value});
+$("#applyGamma").onclick=()=>processImage("gamma",{value:+$("#gamma").value});
+$("#applyVibrance").onclick=()=>processImage("vibrance",{value:+$("#vibrance").value});
+$("#applyColorBalance").onclick=()=>processImage("color_balance",{red:+$("#cbRed").value, green:+$("#cbGreen").value, blue:+$("#cbBlue").value});
+
+/* ═══════════════════ أزرار الفلاتر ═══════════════════ */
+$$(".filter-chips .chip").forEach(c=>c.onclick=()=>{
+  $$(".filter-chips .chip").forEach(x=>x.classList.remove("active")); c.classList.add("active");
+  const f = c.dataset.f;
+  if (f==="median") processImage("median",{size:+$("#medSize").value});
+  else if (f==="gaussian") processImage("gaussian",{radius:+$("#gaussRad").value});
+  else processImage("filter",{filter:f});
+});
+$("#applyMean").onclick=()=>processImage("mean",{size:+$("#meanSize").value});
+$("#applyGaussian").onclick=()=>processImage("gaussian",{radius:+$("#gaussRad").value});
+$("#applyMedian").onclick=()=>processImage("median",{size:+$("#medSize").value});
+$("#applyCustom").onclick=()=>{
+  const txt = $("#kernelText").value.trim();
+  const rows = txt.split("\n").map(r=>r.trim().split(/\s+/).map(Number)).filter(r=>r.length&&r.every(n=>!isNaN(n)));
+  if(!rows.length){ toast("أدخل نواة صالحة",true); return; }
+  processImage("custom",{kernel:rows, normalize:true});
+};
+$("#kernelPreset").onclick=()=>{ $("#kernelText").value="0 -1 0\n-1 8 -1\n0 -1 0"; };
+
+/* ═══════════════════ أزرار كشف الحواف ═══════════════════ */
+$("#laplacianBtn").onclick=()=>processImage("laplacian",{mode:"abs"});
+$("#laplacianEdgeBtn").onclick=()=>processImage("laplacian_edge");
+$("#differenceBtn").onclick=()=>processImage("difference");
+$("#sobelBtn").onclick=()=>processImage("sobel");
+$("#sobelXBtn").onclick=()=>processImage("sobel",{axis:"x"});
+$("#sobelYBtn").onclick=()=>processImage("sobel",{axis:"y"});
+$("#cannyBtn").onclick=()=>processImage("canny",{low:+$("#cannyLow").value, high:+$("#cannyHigh").value});
+$("#cannyApplyBtn").onclick=()=>processImage("canny",{low:+$("#cannyLow").value, high:+$("#cannyHigh").value});
+
+/* ═══════════════════ ميزات إبداعية ═══════════════════ */
+/* تُضاف أزرار الميزات الإبداعية ديناميكياً أسفل لوحة «العمليات» (اليمين). */
+function ensureOperationsPanel(){
+  // نجد اللوحة اليمنى (العمليات) عبر بحثها.
+  const ops = $$(".panel").find(p=>p.querySelector("#cropModeButton"));
+  if (ops && !ops.querySelector(".creative-wrapper")){
+    const wrap = document.createElement("div");
+    wrap.className = "creative-wrapper section";
+    wrap.innerHTML = `<div class="section-title"><span style="color:var(--violet);font-weight:700">✦ ميزات إبداعية</span></div>
+      <div class="btn-grid">
+        <button class="btn" id="vignetteBtn">Vignette</button>
+        <button class="btn" id="grainBtn">Grain</button>
+        <button class="btn" id="splitToneBtn">Split Tone</button>
+        <button class="btn" id="colorPopBtn">Color Pop</button>
+        <button class="btn" id="oilPaintBtn">Oil Paint</button>
+        <button class="btn" id="cartoonBtn">Cartoon</button>
+        <button class="btn green" id="reflectionBtn">Reflection</button>
+        <button class="btn violet" id="watermarkBtn">Watermark</button>
+      </div>`;
+    ops.appendChild(wrap);
+    $("#vignetteBtn").onclick=()=>processImage("vignette",{strength:0.6});
+    $("#grainBtn").onclick=()=>processImage("grain",{amount:0.15});
+    $("#splitToneBtn").onclick=()=>processImage("split_tone",{shadow:[25,35,68],highlight:[247,171,72]});
+    $("#colorPopBtn").onclick=()=>processImage("color_pop",{color:[87,212,242],tolerance:90});
+    $("#oilPaintBtn").onclick=()=>processImage("oil_paint",{radius:3});
+    $("#cartoonBtn").onclick=()=>processImage("cartoon",{smooth:4,edges:true});
+    $("#reflectionBtn").onclick=()=>processImage("reflection",{alpha:0.4});
+    $("#watermarkBtn").onclick=()=>processImage("watermark",{text:"© Mirror Studio",opacity:0.35});
+  }
+}
+window.addEventListener("DOMContentLoaded", ensureOperationsPanel);
+ensureOperationsPanel();
+
+/* ═══════════════════ هندسة ═══════════════════ */
+$("#applyHalf").onclick=()=>{ if(!hasImage())return; processImage("resize",{width:canvas.width/2, height:canvas.height/2, keep:false}); };
+$("#applyDouble").onclick=()=>{ if(!hasImage())return; processImage("resize",{width:canvas.width*2, height:canvas.height*2, keep:false}); };
+$("#resizeButton").onclick=()=>processImage("resize",{width:+$("#resizeWidth").value||canvas.width, height:+$("#resizeHeight").value||canvas.height, keep:$("#keepRatio").checked});
+$("#rotateLeft").onclick=()=>processImage("rotate",{angle:-90});
+$("#rotateRight").onclick=()=>processImage("rotate",{angle:90});
+$("#rotate180").onclick=()=>processImage("rotate",{angle:180});
+$("#rotateButton").onclick=()=>processImage("rotate",{angle:+$("#angle").value});
+$("#flipHorizontal").onclick=()=>processImage("flip",{direction:"horizontal"});
+$("#flipVertical").onclick=()=>processImage("flip",{direction:"vertical"});
+$("#skewButton").onclick=()=>processImage("skew",{skew_x:+$("#skewX").value, skew_y:+$("#skewY").value});
+$("#borderButton").onclick=()=>processImage("border",{size:+$("#borderSize").value, color: hexToRgb($("#borderColor").value)});
+
+function hexToRgb(hex){ const v=hex.replace("#",""); return [parseInt(v.substr(0,2),16),parseInt(v.substr(2,2),16),parseInt(v.substr(4,2),16)]; }
+
+/* ═══════════════════ القص ═══════════════════ */
+$("#cropModeButton").onclick=()=>{
+  if (!hasImage()) { toast("افتح صورة أولاً", true); return; }
+  startCrop();
+};
+function startCrop(){
+  const scale = canvas.width / canvas.clientWidth;
+  cropBox.style.display="block";
+  state.cropActive=true;
+  state.cropRect={x:canvas.width*0.25, y:canvas.height*0.25, w:canvas.width*0.5, h:canvas.height*0.5};
+  updateCropBox();
+  $("#cropConfirmRow").classList.remove("hidden");
+  $("#cropModeButton").disabled=true;
+  canvasInner.style.cursor="move";
+}
+function updateCropBox(){
+  const r=state.cropRect, scale=canvas.width/canvas.clientWidth;
+  cropBox.style.display="block";
+  cropBox.style.left=(r.x/scale)+"px";
+  cropBox.style.top=(r.y/scale)+"px";
+  cropBox.style.width=(r.w/scale)+"px";
+  cropBox.style.height=(r.h/scale)+"px";
+}
+function resetCropUI(){
+  state.cropActive=false; cropBox.style.display="none"; state.cropRect=null; $("#cropConfirmRow").classList.add("hidden");
+  $("#cropModeButton").disabled=false; canvasInner.style.cursor="";
+}
+function clientPoint(e){
+  const rect=canvas.getBoundingClientRect(), scale=canvas.width/rect.width;
+  return {x:(e.clientX-rect.left)*scale, y:(e.clientY-rect.top)*scale};
+}
+cropBox.addEventListener("mousedown", e=>{
+  e.stopPropagation(); e.preventDefault();
+  const p=clientPoint(e), r=state.cropRect;
+  const move=(ev)=>{ const m=clientPoint(ev); r.x=Math.max(0,Math.min(canvas.width-r.w,m.x-p.x+r.x)); r.y=Math.max(0,Math.min(canvas.height-r.h,m.y-p.y+r.y)); updateCropBox(); };
+  const up=()=>{ document.removeEventListener("mousemove",move); document.removeEventListener("mouseup",up); };
+  document.addEventListener("mousemove",move); document.addEventListener("mouseup",up);
+});
+cropBox.querySelector(".crop-resize").addEventListener("mousedown", e=>{
+  e.stopPropagation(); e.preventDefault();
+  const p=clientPoint(e), r=state.cropRect; const sx=r.x+r.w, sy=r.y+r.h;
+  const move=(ev)=>{ const m=clientPoint(ev);
+    r.w=Math.max(20,Math.min(canvas.width-r.x,m.x-r.x)); r.h=Math.max(20,Math.min(canvas.height-r.y,m.y-r.y)); updateCropBox(); };
+  const up=()=>{ document.removeEventListener("mousemove",move); document.removeEventListener("mouseup",up); };
+  document.addEventListener("mousemove",move); document.addEventListener("mouseup",up);
+});
+$("#applyCrop").onclick=()=>{
+  const r=state.cropRect;
+  processImage("crop",{x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.w),height:Math.round(r.h)}).then(resetCropUI);
+};
+$("#cancelCrop").onclick=resetCropUI;
+
+/* ═══════════════════ الرسم ═══════════════════ */
+let brushPoints=[];
+function startDraw(){
+  if (!hasImage()) return;
+  state.drawing=!state.drawing;
+  canvasInner.style.cursor = state.drawing ? "crosshair":"";
+  $("#drawButton").classList.toggle("soft", state.drawing);
+  $("#drawButton").textContent = state.drawing ? "✎ جارٍ الرسم…" : "✎ تفعيل الرسم";
+  toast(state.drawing ? "ارسم مباشرة على الصورة — ثم اضغط «تنزيل»" : "أُلغي وضع الرسم");
+}
+$("#drawButton").onclick=()=>{ startDraw(); if(state.drawing) setBusy(false); };
+let drawingNow=false;
+canvas.addEventListener("mousedown", e=>{
+  if (!state.drawing) return;
+  drawingNow=true; const p=clientPoint(e);
+  brushPoints=[p];
+  const col=$("#brushColor").value, size=+$("#brushSize").value;
+  ctx.lineWidth=size; ctx.lineCap="round"; ctx.lineJoin="round";
+  ctx.strokeStyle = $("#eraserButton").classList.contains("soft") ? "rgba(0,0,0,0)" : col;
+  ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x+0.1,p.y+0.1); ctx.stroke();
+});
+canvas.addEventListener("mousemove", e=>{
+  if (!drawingNow) return;
+  const p=clientPoint(e); brushPoints.push(p);
+  ctx.lineTo(p.x,p.y); ctx.stroke();
+});
+window.addEventListener("mouseup", ()=>{ if(drawingNow){ drawingNow=false; commitData(captureCanvas(),"رسم"); }});
+$("#eraserButton").onclick=()=>{
+  const on = $("#eraserButton").classList.toggle("soft");
+  $("#eraserButton").textContent = on ? "ممحاة فعّالة" : "ممحاة";
+};
+
+/* ═══════════════════ إضافة نص عبر الباك-اند ═══════════════════ */
+$("#addTextButton").onclick=()=>{
+  const text=$("#textInput").value.trim();
+  if(!text){ toast("اكتب نصاً أولاً", true); return; }
+  processImage("draw",{items:[{kind:"text", text, x:0.5, y:0.5, size:+$("#textSize").value, color:$("#textColor").value}]});
+};
+
+/* ═══════════════════ إزالة الخلفية ═══════════════════ */
+$("#removeBgButton").onclick=()=>processImage("remove_background",{tolerance:+$("#bgTolerance").value, method:$("#bgMethod").value});
+
+/* ═══════════════════ مكتبة خلفيات المنتجات ═══════════════════ */
+let selectedBg=null, backgroundList=[];
+(async function loadBackgrounds(){
+  try{
+    const res=await fetch("/api/backgrounds"); const out=await res.json();
+    backgroundList=out.backgrounds||[];
+    const grid=$("#backgroundGrid");
+    backgroundList.forEach(name=>{
+      const d=document.createElement("div");
+      d.className="bg-thumb"; d.style.backgroundImage=`url(/backgrounds/${encodeURIComponent(name)})`;
+      d.onclick=()=>{ selectedBg=name; $$(".bg-thumb").forEach(x=>x.classList.remove("active")); d.classList.add("active"); };
+      grid.appendChild(d);
+    });
+  }catch(e){ $("#backgroundGrid").innerHTML='<span style="color:var(--muted);font-size:11px">لا توجد خلفيات محمّلة</span>'; }
+})();
+$("#applyBackground").onclick=()=>{
+  if(!selectedBg){ toast("اختر خلفية من المكتبة أولاً", true); return; }
+  processImage("background_replace",{bg:selectedBg, fit:$("#bgFit").value});
+};
+
+/* ═══════════════════ دمج صورتين ═══════════════════ */
+/* الدمج من خلال صورة ثانية (بعد رفعها) — نُظهر أزرار الدمج ضمن «خلفية» التبويب. */
+(function addBlendUI(){
+  const ops=$$(".panel").find(p=>p.querySelector("#cropModeButton"));
+  if(!ops) return;
+  const blend=document.createElement("div");
+  blend.innerHTML=`
+    <div class="section-title"><span style="color:var(--green);font-weight:700">⧉ دمج صورتين</span></div>
+    <div class="drop-zone" id="blendDrop">الصورة الثانية: <strong id="secondName">لم تُرفع</strong><br><small style="color:var(--muted)">ارفعها من «٢ صورة ثانية» أعلى</small></div>
+    <div class="two-col" style="margin-top:8px">
+      <div><label class="label" for="blendMode">النمط</label>
+        <select id="blendMode"><option value="normal">عادي Normal</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="difference">Difference</option><option value="add">Add</option><option value="soft_light">Soft Light</option></select>
+      </div>
+      <div><label class="label-line"><span>الشفافية</span><output id="blendOpacityValue">50%</output></label>
+        <input type="range" id="blendOpacity" min="0" max="100" value="50"></div>
+    </div>
+    <button class="btn green" style="width:100%;margin-top:8px" id="blendButton">دمج الصورتين</button>`;
+  // ندرج الدمج قبل قسم الميزات الإبداعية.
+  const creative=ops.querySelector(".creative-wrapper");
+  if(creative){ ops.insertBefore(blend, creative); } else { ops.appendChild(blend); }
+  $("#blendDrop").onclick=()=>$("#secondFileInput").click();
+  const bo=$("#blendOpacity"); bo.oninput=()=>$("#blendOpacityValue").textContent=bo.value+"%";
+  $("#blendButton").onclick=()=>{
+    if(!state.second){ toast("ارفع الصورة الثانية أولاً", true); return; }
+    processImage("blend",{image2:state.second, mode:$("#blendMode").value, opacity:+bo.value/100});
+  };
+})();
+
+/* بدء التشغيل */
+updateUndo();
+setStatus("جاهز");
+</script>
+</body>
+</html>
